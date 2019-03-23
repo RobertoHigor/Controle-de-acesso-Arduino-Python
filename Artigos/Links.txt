@@ -1,0 +1,5 @@
+Wireless Sensor Network System Design Using Raspberry Pi and Arduino for Environmental Monitoring Applications
+https://www.sciencedirect.com/science/article/pii/S1877050914009144
+
+Design of Weather Monitoring System using Raspberry Pi and Arduino
+http://ijatir.org/uploads/145362IJATIR13277-741.pdf
