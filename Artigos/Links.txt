@@ -1,5 +1,22 @@
+================Artigos=====================
 Wireless Sensor Network System Design Using Raspberry Pi and Arduino for Environmental Monitoring Applications
 https://www.sciencedirect.com/science/article/pii/S1877050914009144
 
 Design of Weather Monitoring System using Raspberry Pi and Arduino
 http://ijatir.org/uploads/145362IJATIR13277-741.pdf
+
+Ferramenta de arduino virtual para gerar código
+https://www.tinkercad.com/things/3HKjeG9JqB6-mighty-turing/editel?tenant=circuits
+
+Exceptions
+https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql
+
+===============Guias=======================
+Exemplo Dao (em Java)
+https://github.com/regispires/exemplo-dao-jdbc/blob/master/src/main/java/br/ufc/quixada/dao/ClienteJDBCDAO.java
+
+Orientação a objetos
+https://en.wikibooks.org/wiki/A_Beginner%27s_Python_Tutorial/Classes
+
+Exceptions
+https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql

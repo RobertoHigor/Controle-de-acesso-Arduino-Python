@@ -10,7 +10,7 @@ void setup() {
 void loop() {
     if (Serial.avaialble()) {
         char serialListener = Serial.read();
-        print("Achou o Python")
+        Serial.println("Achou o Python")
         if (serialListener == 'H') {
             digitalWrite(LED, HIGH);
             Serial.write("Teste")
@@ -19,7 +19,7 @@ void loop() {
             digitalWrite(LED, LOW);
         }
         else if (SerialListener == 'O'){
-            print("Recebeu O")
+            Serial.println("Recebeu O")
         }
     }
 }
