@@ -1,16 +1,16 @@
 import UsuarioDao
 class Usuario:
-    """def __init__(self, nome, usuario, senha):
+    def __init__(self, nome, usuario, senha):
         self.nome = nome
         self.usuario = usuario
-        self.senha = senha"""
+        self.senha = senha
 
-    #Declarando as variáveis do Usuario
+    """#Declarando as variáveis do Usuario
     def __init__(self, isbn, titulo, autor, preco):
         self.isbn = isbn
         self.titulo = titulo
         self.autor = autor
-        self.preco = preco
+        self.preco = preco"""
 
 #EM python não se usa getters e setters, então caso queira fazer algo deve-se usar de propriedades
 """

@@ -13,9 +13,15 @@ class UsuarioDao:
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Usuario (
                 nome VARCHAR(50) NOT NULL,
-                usuario VARCHAR(20) PRIMARY KEY,
-                senha int(8) NOT NULL
+                usuario VARCHAR(20),
+                senha int(8)
+                PRIMARY KEY(usuario, senha)
                 )""")
+
+            """
+            Importante:
+                Não pode ser permitido repetir asenha, podendo ser ela uma chave primária
+            """
         except mysql.connector.Error as error:
             print("Falha ao criar o banco: {}".format(error))
         else:
@@ -28,8 +34,9 @@ class UsuarioDao:
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()
-
-            cursor.execute("INSERT INTO livro VALUES (%s, %s, %s, %s) ", (novoUsuario.isbn, novoUsuario.titulo, novoUsuario.autor, novoUsuario.preco))                     
+            
+            #cursor.execute("INSERT INTO livro VALUES (%s, %s, %s, %s) ", (novoUsuario.isbn, novoUsuario.titulo, novoUsuario.autor, novoUsuario.preco))   
+            cursor.execute("INSERT INTO Usuario VALUES (%s, %s, %s)", (novoUsuario.nome, novoUsuario.usuario, novoUsuario.senha))                  
         #bloco de exceção
         except mysql.connector.Error as error:
             print("Falha ao inserir: {}".format(error))
@@ -41,12 +48,12 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
-    def selecionarUsuario(self, senha):
+    def selecionarUsuario(self, usuarioConsulta):
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()          
             #A variavel (senha,) precisa SEMPRE terminar em vírgula          
-            cursor.execute("SELECT isbn FROM livro WHERE isbn = '%s'", (senha,))            
+            cursor.execute("SELECT senha FROM Usuario WHERE senha = '%s'", (usuarioConsulta.senha,))            
             
         except mysql.connector.Error as error:
             print("Failha ao obter o registro: {}".format(error))
