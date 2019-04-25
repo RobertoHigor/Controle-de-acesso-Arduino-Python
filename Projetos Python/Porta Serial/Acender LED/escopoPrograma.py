@@ -3,14 +3,15 @@ import serial
 import time
 
 arduino = serial.Serial('/dev/tty.usbmodem1411', 9600)
-
+"""
+    Métodos ========================================
+"""
 def ligarDesligar():
     #Loop infinito para ficar recebendo mensagens
-    #conseguir checar se chegou uma mensagem e imprimir ela
-     #Um IF caso a mensagem seja "123", para imprimir alguma coisa
-    data = arduino.readline()[:-2]
-    
+    #conseguir checar se chegou uma mensagem e imprimir ela  
     while 1:
+        #Um IF caso a mensagem seja "123", para imprimir alguma coisa
+        data = arduino.readline()[:-2]
         if data:
             print("Chegou a mensagem")
             print(data)
@@ -26,6 +27,8 @@ def ligarDesligar():
    
     
     #e enviar uma mensagem de volta para o arduino
-
+"""
+    Main =============================================
+"""
 time.sleep(2) #Esperar a inicialização
 ligarDesligar()
