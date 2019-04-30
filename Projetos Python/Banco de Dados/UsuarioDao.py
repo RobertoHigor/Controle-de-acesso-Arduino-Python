@@ -48,18 +48,46 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
+    def inserirLog(self, usuarioLogin):
+        try:
+            con = ConnectionFactory.conectar()
+            cursor = con.cursor()            
+            cursor.execute("INSERT INTO log (usuario_id, sala) VALUES (%s, 'Sala 4')", (usuarioLogin.usuario,))
+        except mysql.connector.Error as error:        
+            print("Falha ao inserir o registro: {}".format(error))
+        else:
+            con.commit()
+        finally:
+            con.close()
+            cursor.close()
+
     def selecionarUsuario(self, usuarioConsulta):
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()          
             #A variavel (senha,) precisa SEMPRE terminar em vírgula          
-            cursor.execute("SELECT senha FROM Usuario WHERE senha = '%s'", (usuarioConsulta.senha,))            
+            cursor.execute("SELECT * FROM Usuario WHERE senha = '%s'", (usuarioConsulta.senha,))            
             
         except mysql.connector.Error as error:
-            print("Failha ao obter o registro: {}".format(error))
+            print("Falha ao obter o registro: {}".format(error))
         else:
             #return cursor.fetchall()
             return cursor.fetchone()
+        finally:
+            con.close()
+            cursor.close()
+
+    def logarUsuario(self, senha):
+        try:
+            con = ConnectionFactory.conectar()
+            cursor = con.cursor()          
+            #A variavel (senha,) precisa SEMPRE terminar em vírgula          
+            cursor.execute("SELECT * FROM Usuario WHERE senha = '%s'", (senha,))            
+            
+        except mysql.connector.Error as error:
+            print("Falha ao obter o registro: {}".format(error))
+        else:
+            return cursor.fetchone()                                 
         finally:
             con.close()
             cursor.close()

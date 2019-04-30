@@ -5,7 +5,7 @@ class Usuario:
         self.usuario = usuario
         self.senha = senha
 
-    """#Declarando as variáveis do Usuario
+    """#Declarando as variáveis do Livro
     def __init__(self, isbn, titulo, autor, preco):
         self.isbn = isbn
         self.titulo = titulo
