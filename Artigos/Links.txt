@@ -20,3 +20,30 @@ https://en.wikibooks.org/wiki/A_Beginner%27s_Python_Tutorial/Classes
 
 Exceptions
 https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql
+
+Como utilizar o keypad no arduino (com código)
+http://www.circuitbasics.com/how-to-set-up-a-keypad-on-an-arduino/
+
+Serviu de inspiração para a organização das classes
+https://www.baeldung.com/java-dao-pattern
+
+Ensinando o básico de comunicação pela porta serial
+https://www.instructables.com/id/Arduino-Python-Communication-via-USB/
+
+Conectando o banco de dados com o django
+https://www.dev2qa.com/how-to-connect-mysql-database-in-django-project/
+
+Adicionando novos atributos pra tabela de usuario do django
+https://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
+
+--Comunicação Arduino
+https://stackoverflow.com/questions/19843643/dumping-data-over-ethernet-with-an-arduino-client-python-server
+
+---Sobre Senhas---
+https://www.geeksforgeeks.org/store-password-database/
+https://stackoverflow.com/questions/9559549/how-to-compare-plain-text-password-to-hashed-password-using-bcrypt
+https://www.geeksforgeeks.org/sha-in-python/
+
+===================Para testar depois==============
+comando isWaiting() > 0 (retorna quantidade de bytes lida no serial.
+https://stackoverflow.com/questions/42769611/arduino-to-python-is-serial-input-from-readline-an-integer-or-an-actual-stri

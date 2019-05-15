@@ -1,9 +1,12 @@
 import UsuarioDao
 class Usuario:
-    def __init__(self, nome, usuario, senha):
-        self.nome = nome
-        self.usuario = usuario
+    def __init__(self, usuario_id, senha, usuario, primeiroNome, ultimoNome, email):
+        self.usuario_id = usuario_id
         self.senha = senha
+        self.usuario = usuario       
+        self.primeiroNome = primeiroNome
+        self.ultimoNome = ultimoNome      
+        self.email = email
 
     """#Declarando as variáveis do Livro
     def __init__(self, isbn, titulo, autor, preco):

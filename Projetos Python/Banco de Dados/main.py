@@ -1,5 +1,6 @@
 import serial
 import time
+import hashlib
 
 from UsuarioDao import UsuarioDao
 from Usuario import Usuario
@@ -9,15 +10,21 @@ arduino = serial.Serial('COM4', 9600)
 """
     Métodos=================================
 """
+#Método para checar senha
+def criptografarSenha(senha):
+    result = hashlib.sha256(senha.encode())
+    return result.hexdigest()
+
 #Inserir na tabela LOG quando a porta foi aberta
 def inserirRegistro(result):
     usr = UsuarioDao()     
-    usuarioRetorno = Usuario(result[0], result[1], result[2])               
+    usuarioRetorno = Usuario(result[0], result[1], result[4], result[5], result[6], result[7])               
     usr.inserirLog(usuarioRetorno)
 
 #Método para chegar se achou um registro com a senha digitada
 def logar(senha):
-    usr = UsuarioDao()
+    usr = UsuarioDao()     
+    #result = usr.logarUsuario(criptografarSenha(senha))
     result = usr.logarUsuario(senha)
 
     if result is not None:        
@@ -45,5 +52,7 @@ while(1):
     senha = int(arduino.readline().decode("UTF-8")[:-2])
     if senha:
         print(senha)       
-        logar(senha)        
+        logar(senha)     
+
+
 

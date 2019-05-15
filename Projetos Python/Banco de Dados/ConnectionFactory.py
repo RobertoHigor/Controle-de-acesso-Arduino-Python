@@ -9,7 +9,7 @@ class ConnectionFactory:
             host="localhost",
             user="root",
             passwd="26793653",
-            database="demoapi"
+            database="djangobanco"
             )
         #Mensagem de erro
         except mysql.connector.Error as error:
