@@ -8,7 +8,14 @@ O programa irá esperar o input no teclado numérico até que o usuário aperte a te
 
 # Pré-requisitos Python
 pip install pyserial
+pip install psycopg2
 
 # Pré-requisitos Arduino
-Keypad.h
+Keypad.
+
+# Instruções
+
+Basta ligar o Arduino e executar o código do Python que ficará rodando em loop esperando por uma senha
+
+obs: Alterar a coluna data_acesso para o valor default now()
 

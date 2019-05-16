@@ -83,7 +83,16 @@ class UsuarioDao:
             cursor = con.cursor()          
             #A variavel (senha,) precisa SEMPRE terminar em vírgula          
             #cursor.execute("SELECT * FROM AUTH_USER WHERE senha = '%s'", (senha,))   
-            cursor.execute("SELECT b.* FROM AUTH_USER AS b INNER JOIN users_acesso AS a ON (b.id=a.usuario_id_id) WHERE a.senhaPorta = '%s' ", (senha,))           
+            cursor.execute("""SELECT b.* 
+                            FROM AUTH_USER AS b 
+                            INNER JOIN 
+                                (
+                                    SELECT "senhaPorta", usuario_id_id
+                                    FROM users_acesso
+                                    AS a
+                                )AS a 
+                            ON b.id=a.usuario_id_id
+                            WHERE a."senhaPorta" = '%s'""", (senha,))           
             
         except mysql.connector.Error as error:
             print("Falha ao obter o registro: {}".format(error))

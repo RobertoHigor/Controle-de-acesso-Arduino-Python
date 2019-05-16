@@ -1,18 +1,20 @@
-import mysql.connector
+#pip install psycopg2
+import psycopg2
+from psycopg2 import Error
 
 class ConnectionFactory:
     #Metodo estático parar poder usar sem instanciar a classe
     @staticmethod
     def conectar():
         try:
-            con = mysql.connector.connect(
+            con = psycopg2.connect(
             host="localhost",
-            user="root",
-            passwd="26793653",
-            database="djangobanco"
+            user="postgres",
+            password="26793653",
+            database="faeterj"
             )
         #Mensagem de erro
-        except mysql.connector.Error as error:
+        except (Exception, psycopg2.Error) as error:
             print('Exceção número: {}, valor {!r}'.format(error.args[0], error))
             raise
         #Retorna o objeto con caso ocorra tudo bem
