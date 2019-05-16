@@ -9,6 +9,6 @@ O programa irá esperar o input no teclado numérico até que o usuário aperte a te
 # Pré-requisitos Python
 pip install pyserial
 
-#Pré-requisitos Arduino
+# Pré-requisitos Arduino
 Keypad.h
 
