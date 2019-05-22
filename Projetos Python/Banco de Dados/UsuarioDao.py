@@ -1,5 +1,6 @@
 from ConnectionFactory import ConnectionFactory
-import mysql.connector
+import psycopg2
+from psycopg2 import Error
 from Usuario import Usuario
 #exceptions https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql
 
@@ -22,7 +23,7 @@ class UsuarioDao:
             Importante:
                 Não pode ser permitido repetir a senha, podendo ser ela uma chave primária
             """
-        except mysql.connector.Error as error:
+        except (Exception, psycopg2.Error) as error:
             print("Falha ao criar o banco: {}".format(error))
         else:
             con.commit()
@@ -38,7 +39,8 @@ class UsuarioDao:
             #cursor.execute("INSERT INTO livro VALUES (%s, %s, %s, %s) ", (novoUsuario.isbn, novoUsuario.titulo, novoUsuario.autor, novoUsuario.preco))   
             cursor.execute("INSERT INTO Usuario VALUES (%s, %s, %s)", (novoUsuario.nome, novoUsuario.usuario, novoUsuario.senha))                  
         #bloco de exceção
-        except mysql.connector.Error as error:
+        
+        except (Exception, psycopg2.Error) as error:
             print("Falha ao inserir: {}".format(error))
         #bloco que será executado caso tudo ocorra bem
         else:
@@ -53,7 +55,7 @@ class UsuarioDao:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()            
             cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('Sala 3', '%s')", (usuarioLogin.usuario_id,))
-        except mysql.connector.Error as error:        
+        except (Exception, psycopg2.Error) as error:        
             print("Falha ao inserir o registro: {}".format(error))
         else:
             con.commit()
@@ -68,7 +70,7 @@ class UsuarioDao:
             #A variavel (senha,) precisa SEMPRE terminar em vírgula          
             cursor.execute("SELECT * FROM AUTH_USER WHERE senha = '%s'", (usuarioConsulta.senha,))            
             
-        except mysql.connector.Error as error:
+        except (Exception, psycopg2.Error) as error:
             print("Falha ao obter o registro: {}".format(error))
         else:
             #return cursor.fetchall()
@@ -94,7 +96,7 @@ class UsuarioDao:
                             ON b.id=a.usuario_id_id
                             WHERE a."senhaPorta" = '%s'""", (senha,))           
             
-        except mysql.connector.Error as error:
+        except (Exception, psycopg2.Error) as error:
             print("Falha ao obter o registro: {}".format(error))
         else:
             return cursor.fetchone()                                 
