@@ -36,10 +36,10 @@ https://www.dev2qa.com/how-to-connect-mysql-database-in-django-project/
 Adicionando novos atributos pra tabela de usuario do django
 https://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
 
---Comunicação Arduino
+=====================Comunicação Arduino===================
 https://stackoverflow.com/questions/19843643/dumping-data-over-ethernet-with-an-arduino-client-python-server
 
----Sobre Senhas---
+===========================Sobre Senhas=====================
 https://www.geeksforgeeks.org/store-password-database/
 https://stackoverflow.com/questions/9559549/how-to-compare-plain-text-password-to-hashed-password-using-bcrypt
 https://www.geeksforgeeks.org/sha-in-python/
@@ -47,3 +47,11 @@ https://www.geeksforgeeks.org/sha-in-python/
 ===================Para testar depois==============
 comando isWaiting() > 0 (retorna quantidade de bytes lida no serial.
 https://stackoverflow.com/questions/42769611/arduino-to-python-is-serial-input-from-readline-an-integer-or-an-actual-stri
+
+==================Notificações=====================
+https://stackoverflow.com/questions/8587033/facebook-like-notification-updates-using-django-signal-or-notification
+https://stackoverflow.com/questions/46247729/django-mark-as-read-notifications
+https://www.reddit.com/r/django/comments/3hv0gt/has_anyone_used_djangonotifications/
+https://stackoverflow.com/questions/48644982/django-website-that-refreshes-page-on-new-postgres-entry-to-provide-realtime-upd
+https://www.reddit.com/r/django/comments/9lk41e/detect_database_change_by_using_django_channels/
+https://stackoverflow.com/questions/1609775/how-do-i-display-notifications-from-django-notification
