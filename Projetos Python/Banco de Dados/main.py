@@ -5,7 +5,8 @@ import hashlib
 from UsuarioDao import UsuarioDao
 from Usuario import Usuario
 
-arduino = serial.Serial('COM4', 9600)
+#Escolher a porta do arduino
+arduino = serial.Serial('COM3', 9600)
 
 """
     Métodos=================================
