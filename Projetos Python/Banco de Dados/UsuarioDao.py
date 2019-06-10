@@ -54,7 +54,7 @@ class UsuarioDao:
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()            
-            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('Sala 3', '%s')", (usuarioLogin.usuario_id,))
+            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('Laboratorio', '%s')", (usuarioLogin.usuario_id,))
         except (Exception, psycopg2.Error) as error:        
             print("Falha ao inserir o registro: {}".format(error))
         else:

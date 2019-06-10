@@ -1,14 +1,10 @@
 #include <Keypad.h>
-#include <Servo.h>
 
 #define LED 13
-#define SERVO 3 //Porta digital 6 PWM
+#define RELE 10 //Porta digital 6 PWM
 
 //Exemplo:
 //http://wiring.org.co/reference/libraries/Keypad/Keypad_addEventListener_.html
-
-Servo myServo;
-int pos = 0; //posição do Servo
 
 const byte ROWS = 4; 
 const byte COLS = 3; 
@@ -23,13 +19,15 @@ char hexaKeys[ROWS][COLS] = {
 byte rowPins[ROWS] = {9, 8, 7, 6}; 
 byte colPins[COLS] = {5, 4, 3}; 
 
+//byte rowPins[ROWS] = {6, 5, 4, 3}; 
+//byte colPins[COLS] = {2, 1, 0};
+
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
   Serial.begin(9600);  
-  myServo.attach(SERVO);
-  //myServo.write(0);
-  pinMode(LED, OUTPUT);  
+  pinMode(LED, OUTPUT); 
+  pinmode(RELE, OUTPUT)   (ver se é output) 
 }
 
 int contador = 0;
@@ -47,15 +45,13 @@ if (Serial.available()){
         char serialListener = Serial.read();     
         if (serialListener == 'S'){
             digitalWrite(LED, HIGH); 
-            s.write(90);
-            //delay(1000);
-            //digitalWrite(LED, LOW); 
+            digitalWrite(RELE, LOW);
+            delay(1000);
+            digitalWrite(LED, LOW); 
+            digitalWrite(RELE, HIGH);
             liberou = 0;            
         }
-        if (serialListener == 'F'){
-            digitalWrite(LED, LOW);
-            //delay(1000);
-            //digitalWrite(LED, HIGH);
+        if (serialListener == 'F'){           
             liberou = 0;
         }      
     }
