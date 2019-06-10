@@ -1,7 +1,9 @@
 #include <Keypad.h>
 
+#include <Keypad.h>
+
 #define LED 13
-#define RELE 10 //Porta digital 6 PWM
+#define RELE 11 //Porta digital 6 PWM
 
 //Exemplo:
 //http://wiring.org.co/reference/libraries/Keypad/Keypad_addEventListener_.html
@@ -16,18 +18,18 @@ char hexaKeys[ROWS][COLS] = {
   {'*', '0', '#'}
 };
 
-byte rowPins[ROWS] = {9, 8, 7, 6}; 
-byte colPins[COLS] = {5, 4, 3}; 
+//byte rowPins[ROWS] = {9, 8, 7, 6}; 
+//byte colPins[COLS] = {5, 4, 3}; 
 
-//byte rowPins[ROWS] = {6, 5, 4, 3}; 
-//byte colPins[COLS] = {2, 1, 0};
+byte rowPins[ROWS] = {8, 7, 6, 9}; 
+byte colPins[COLS] = {5, 4, 3, 2};
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
   Serial.begin(9600);  
   pinMode(LED, OUTPUT); 
-  pinmode(RELE, OUTPUT)   (ver se é output) 
+  pinMode(RELE, OUTPUT);   //(ver se é output) 
 }
 
 int contador = 0;
@@ -48,7 +50,7 @@ if (Serial.available()){
             digitalWrite(RELE, LOW);
             delay(1000);
             digitalWrite(LED, LOW); 
-            digitalWrite(RELE, HIGH);
+            //digitalWrite(RELE, HIGH);
             liberou = 0;            
         }
         if (serialListener == 'F'){           
