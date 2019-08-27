@@ -43,6 +43,7 @@ https://stackoverflow.com/questions/19843643/dumping-data-over-ethernet-with-an-
 https://www.geeksforgeeks.org/store-password-database/
 https://stackoverflow.com/questions/9559549/how-to-compare-plain-text-password-to-hashed-password-using-bcrypt
 https://www.geeksforgeeks.org/sha-in-python/
+https://stackoverflow.com/questions/16925129/generate-unique-id-in-django-from-a-model-field/37359808#37359808?newreg=e0311580d9ac458c8a6784be5394e054
 
 ===================Para testar depois==============
 comando isWaiting() > 0 (retorna quantidade de bytes lida no serial.
