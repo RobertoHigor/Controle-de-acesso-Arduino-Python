@@ -4,9 +4,9 @@ Programa desenvolvido em python que se comunica com um servidor arduino. O ardui
 
 ### Instalação
 
-##Aplicação Python
+## Aplicação Python
 
-#Criando ambiente virtual
+# Criando ambiente virtual
 É necessário instalar o pacote virtualenv para que seja possível criar um ambiente virtual onde será instalado as bibliotecas sem que haja conflito com as já existentes no computador.
 
 Para se instalar o virtualenv baixa digitar o comando `pip install virtualenv`
@@ -30,13 +30,13 @@ pip install psycopg2
 Para se instalar as bibliotecas que foram utilizadas, basta executar o seguinte comando dentro do ambiente virtual
 `pip install -r requirements.txt`
 
-# Instruções para executar
+# Instruções para execução
 É necessário entrar no ambiente virtual. Após isso, é preciso alterar a porta no qual o Arduino está conectado na variável arduino no arquivo main.py. Por padrão está a porta COM4.
 Com o banco de dados sendo executado junto do arduino, basta executar o código através do comando `python main.py` que ele já vai estar funcionando em loop esperando uma mensagem do Arduino.
 
 obs: Alterar a coluna data_acesso para o valor default now()
 
-##Arduino
+## Arduino
 O programa irá esperar o input no teclado numérico até que o usuário aperte a tecla "*". Após recebido, ele envia para o python através da porta serial.
 
 É necessário a instalação da [Arduino IDE](https://www.arduino.cc/en/Main/Software) que já inclui os drivers necessários para o Arduino. Em seguida é preciso que seja criado um projeto na IDE para que seja possível o envio do código para a placa Arduino.
@@ -46,14 +46,14 @@ Keypad.h
 
 A biblioteca já se encontra no Arduino IDE, sendo apenas necessário ir em Sketch>Incluir Biblioteca>Keypad. Caso não encontre a biblioteca, pode ser necessário que busque em Sketch>Incluir Biblioteca>Gerenciar bibliotecas.
 
-#Instalação
+# Instalação
 Crie um projeto com o código do arquivo arduinoBanco.ino e em seguida importe as bibliotecas necessárias. Após isso só preciso clicar e enviar e verificar se o envio foi feito com sucesso. O Arduino já estará executando o código aguardando a conexão e execução da aplicação em Python.
 
-##Banco de dados PostgresSQL
+## Banco de dados PostgresSQL
 
 O banco de dados é onde será armazenado as senhas dos usuários além dos registros de entrada. A criação do banco de dados será feita pelo Django utilizando a ORM porém é necessário que seja instalado o PostgresSQL para que seja executado o banco de dados.
 A versão utilizada foi a 11.3-1
 
-#Como executar
+# Como executar
 Basta inicializar o serviço no caso do windows, pode ser feito apertando windows + r e digitando services.msc para localizar e inicalizar o serviço postgresql-x64-11.
 O PostgresSQL provém uma interface gráfica pelo aplicativo pgAdmin4.
