@@ -5,8 +5,10 @@ import hashlib
 from UsuarioDao import UsuarioDao
 from Usuario import Usuario
 
+#
 #Escolher a porta do arduino
-arduino = serial.Serial('COM4', 9600)
+#
+arduino = serial.Serial('COM3', 9600)
 
 """
     Métodos=================================
@@ -49,11 +51,23 @@ def logar(senha):
         #Criar o banco de dados e inserir usuário
         #usr.criarBanco()
         #usr.inserirUsuario(usuario1)
-while(1):
-    senha = int(arduino.readline().decode("UTF-8")[:-2])
-    if senha:
-        print(senha)       
-        logar(senha)     
+while(1):  
+        #Bloco para tratar erro nos digitos recebidos ao invés de parar o programa
+        try:
+            senha = int(arduino.readline().decode("UTF-8")[:-2])
+        except Exception as err:
+             senha = 0
+             print("Ocorreu um erro com digitos recebidos: '", err)
+        
+        if senha:
+            print(senha)       
+            try:
+                logar(senha) 
+            except Exception as err:
+                print("Ocorreu um erro no banco de dados: '", err )
+ 
+       
+
 
 
 
