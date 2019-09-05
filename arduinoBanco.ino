@@ -68,7 +68,7 @@ if (Serial.available()){
     Serial.println(customKeyArray);
     customKeyArray[0] = '\0';
     contador = 0;    
-    liberou = 1; //Pode fazer a leitura do serial Listener    
+    liberou = 1; //Permite fazer a leitura do serial Listener    
   }
 
 delay(100);
