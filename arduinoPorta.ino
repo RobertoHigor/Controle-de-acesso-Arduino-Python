@@ -2,6 +2,7 @@
 
 #define LED 13
 #define RELE 11 //Porta digital 6 PWM
+#define BUZZER 10
 
 //Exemplo:
 //http://wiring.org.co/reference/libraries/Keypad/Keypad_addEventListener_.html
@@ -18,7 +19,7 @@ char hexaKeys[ROWS][COLS] = {
 };
 
 //Ordem dos pinos da faculdade
-byte rowPins[ROWS] = {8, 7, 6, 9}; 
+byte rowPins[ROWS] = {9, 8, 7, 6}; 
 byte colPins[COLS] = {5, 4, 3, 2};
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
@@ -26,7 +27,9 @@ Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS)
 void setup(){
   Serial.begin(9600);  
   pinMode(LED, OUTPUT); 
+  pinMode(RELE, OUTPUT);
   pinMode(RELE, OUTPUT);   
+  pinMode(BUZZER, 2000);   
   digitalWrite(RELE, HIGH); //Para começar com a porta fechada
 }
 
@@ -66,6 +69,7 @@ if (Serial.available()){
   char customKey = customKeypad.getKey(); 
   //Adicionar somente digitos numéricos para o array
   if (customKey && isdigit(customKey)){
+    tone(BUZZER, 2000, 100);
     customKeyArray[contador++] = customKey;
   }
  
@@ -74,6 +78,7 @@ if (Serial.available()){
   if (customKey == '*' && contador > 0){
 
     //Finalizando a linha para enviar o array
+    tone(BUZZER, 2000, 500);
     customKeyArray[contador] = '\0';
     Serial.println(customKeyArray);
 

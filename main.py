@@ -60,10 +60,13 @@ while(1):
         #Bloco para tratar erro nos digitos recebidos ao invés de parar o programa
         if (arduino):
             try:
+                print("Aguardando senha...")
                 senha = int(arduino.readline().decode("UTF-8")[:-2])
             except Exception as err:
                 senha = 0
                 print("Ocorreu um erro com digitos recebidos: '", err)
+                #Desconectando o Arduino
+                arduino = 0                
             
             if senha:
                 #Mostrar a senha para testes
@@ -88,7 +91,7 @@ while(1):
                             print("Conectado com sucesso")    
             #Caso não encontre, espere 30 segundos para tentar novametne         
             except Exception as err:            
-                print("Porta serial inválida", err)
+                print("Arduino desconectado", err)
                 print("Reconectando em 30 segundos...")
                 arduino = 0
                 time.sleep(30)
