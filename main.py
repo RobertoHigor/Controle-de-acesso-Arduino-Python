@@ -1,6 +1,5 @@
-import serial
-import time
-import hashlib
+import serial, socket, time
+#import hashlib
 import serial.tools.list_ports
 
 from UsuarioDao import UsuarioDao
