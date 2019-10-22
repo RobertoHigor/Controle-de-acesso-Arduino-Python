@@ -56,13 +56,14 @@ if (contador >=7){
 }
 
 //Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
-if (client.available() && liberou){ 
+if (client.available()){ 
         Serial.println("Aguardando resposta...");
         char serialListener = client.read(); 
         //Liberar caso receber um sinal 'S'    
         if (serialListener == '1'){
-          //fazer nada
-        }else if (serialListener == 'S'){           
+          //fazer nada. Testar sem else if caso dê erro.
+        }else if (liberou){
+          if (serialListener == 'S'){           
           digitalWrite(RELE, LOW); //Liberar porta
           delay(1000);           
           digitalWrite(RELE, HIGH); //Fechar porta
@@ -72,7 +73,8 @@ if (client.available() && liberou){
         }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
           Serial.println("Senha inválida");     
           liberou = 0;
-        }                      
+        }   
+        }                   
 }else {
   //Pegar a tecla digitada
   char customKey = customKeypad.getKey(); 
