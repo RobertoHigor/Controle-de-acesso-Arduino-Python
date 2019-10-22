@@ -9,6 +9,7 @@ from Usuario import Usuario
 
 IP = "192.168.20.2" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
 PORTA = 65432 #Portas não registradas > 1023
+TIMEOUT = 120 #Tempo esperando por dados
 
 """
     Métodos=================================
@@ -44,41 +45,56 @@ def logar(senha):
     Main ====================================
 """
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    sock.bind((IP, PORTA))
-    sock.setblocking(False)
-    sock.settimeout(10.0)
+    print("Bind no IP: {} e PORTA: {}".format(IP, PORTA))
+    sock.bind((IP, PORTA))  
+    print("Servidor ouvindo...") 
     sock.listen()
+
     conn, addr = sock.accept()
+    conn.setblocking(False)
+    conn.settimeout(TIMEOUT)
+    print("Conexão de {} aceita".format(addr))
 
     while(1):  
             #Bloco para tratar erro nos digitos recebidos ao invés de parar o programa
-            if(conn):                
+            if(conn):                                            
                 try:
-                    senha = int(conn.recv(16).decode("UTF-8")) #decode serve para transformar em caracteres e o :-2 significa ir até -2 para cortar \n                        
+                    print("Aguardando dados...")   
+                    conn.send(b'1')                                  
+                    senha = int(conn.recv(8).decode("UTF-8")) #decode serve para transformar em caracteres e o :-2 significa ir até -2 para cortar \n                     
                     #Parar caso não receber mais dados
                     if not senha: 
-                        print("Conexão perdida")
+                        print("Conexão perdida, sem mais dados")
                         conn = 0
-                        break
+                    elif senha:
+                        #Mostrar a senha para testes
+                        print(senha)            
+                        try:
+                            logar(senha)    
+                        except OSError as err:
+                            print("Ocorreu um erro com o Socket", err)                           
+                        except Exception as err:
+                            print("Ocorreu um erro ao tentar logar: '", err )
+                                                                      
+                except socket.timeout as err:
+                    print("Sem dados recebidos: ", err)                      
+                                  
+                except socket.error as err:
+                    print("Erro na conexão: ", err)      
+                    conn = 0                       
                 except Exception as err:
                     senha = 0
                     print("Ocorreu um erro com digitos recebidos: '", err)                    
-                if senha:
-                    #Mostrar a senha para testes
-                    print(senha)            
-                    try:
-                        logar(senha)    
-                    except OSError as err:
-                        print("Ocorreu um erro com o Socket", err)                           
-                    except Exception as err:
-                        print("Ocorreu um erro ao tentar logar: '", err )
+                
             else:
-                #Tentar reconectar caso a conexão seja perdida  
-                conn = 0      
-                try:               
-                    #Escaneia todas as portas COM e procura uma com o nome de Arduino   
+                #Tentar reconectar caso a conexão seja perdida                 
+                print("Reconectando...")                                               
+                try:              
+                    #Reiniciando servidor
                     sock.listen()
                     conn, addr = sock.accept()
+                    conn.setblocking(False)
+                    conn.settimeout(TIMEOUT)
                     print("Conectado com sucesso")    
                 #Caso não encontre, espere 30 segundos para tentar novametne         
                 except Exception as err:            

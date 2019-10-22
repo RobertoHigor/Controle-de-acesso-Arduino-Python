@@ -15,7 +15,7 @@ class ConnectionFactory:
             )
         #Mensagem de erro
         except (Exception, psycopg2.Error) as error:
-            print('Exceção número: {}, valor {!r}'.format(error.args[0], error))
+            print('Ocorreu um erro com o banco de dados: {}, valor {!r}'.format(error.args[0], error))
             raise
         #Retorna o objeto con caso ocorra tudo bem
         else:

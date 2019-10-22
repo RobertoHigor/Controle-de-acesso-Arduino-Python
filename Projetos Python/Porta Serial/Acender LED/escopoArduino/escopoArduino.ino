@@ -1,15 +1,20 @@
 #include <Keypad.h>
+#include <Ethernet.h>
 
 #define LED 13
 #define RELE 11 //Porta digital 6 PWM
 
-//Exemplo:
-//http://wiring.org.co/reference/libraries/Keypad/Keypad_addEventListener_.html
+//Definindo as configurações da conexão
+byte mac[] = { 0xBE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte ip[] = { 192, 168, 20, 100 };
+byte server[] = { 192, 168, 20, 2 }; // Touchberry Pi Server
+int tcp_port = 65432;
+EthernetClient client;
 
+//Configuração de teclado
 const byte ROWS = 4; 
 const byte COLS = 4; 
 
-//Configuração de teclado da faculdade
 char hexaKeys[ROWS][COLS] = {
   {'1', '2', '3', 'A'},
   {'4', '5', '6', 'B'},
@@ -17,17 +22,26 @@ char hexaKeys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-//Ordem dos pinos da faculdade
-byte rowPins[ROWS] = {8, 7, 6, 9}; 
-byte colPins[COLS] = {5, 4, 3, 2};
+//Ordem dos pinos
+byte rowPins[ROWS] = {9, 8, 7, 6}; 
+byte colPins[COLS] = {5, 3, 2, 1};
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
+  //Inicializando a conexão com o mac e ip definidos.
+  Ethernet.begin(mac, ip);
   Serial.begin(9600);  
   pinMode(LED, OUTPUT); 
   pinMode(RELE, OUTPUT);   
   digitalWrite(RELE, HIGH); //Para começar com a porta fechada
+
+  //Um segundo para o shield inicializar
+  delay(1000);
+  //Diminuindo o timeout do client.connect() para que não bloqueie o Arduino
+  client.setConnectionTimeout(200);
+  conectar();
+  
 }
 
 int contador = 0;
@@ -36,57 +50,70 @@ char liberou = 0;
 
 void loop(){
 
-//Reiniciar o contador se passar do numero máximo
-if (contador >=9){    
+//Reiniciar o contador se passar do numero máximo de dígitos.
+if (contador >=7){    
     contador = 0;
 }
 
-//Se a conexão serial estiver disponível
-if (Serial.available()){
-    if (liberou){  
-        char serialListener = Serial.read(); 
+//Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
+if (client.available() && liberou){ 
+        Serial.println("Aguardando resposta...");
+        char serialListener = client.read(); 
         //Liberar caso receber um sinal 'S'    
-        if (serialListener == 'S'){
-            digitalWrite(LED, HIGH); //Acender LED
-            digitalWrite(RELE, LOW); //Liberar porta
-            delay(1000);
-            digitalWrite(LED, LOW); //Apagar LED
-            digitalWrite(RELE, HIGH); //Fechar porta
-            liberou = 0;  //Impedir de entrar novamente nesse bloco até limpar o array          
-        }
-        //Exibir falha caso receber um sinal 'F'
-        if (serialListener == 'F'){           
-            liberou = 0;
-        }      
-    }
-}
-
-  //Pegar uma tecla
+        if (serialListener == '1'){
+          Serial.println(serialListener);
+        }else if (serialListener == 'S'){           
+          digitalWrite(RELE, LOW); //Liberar porta
+          delay(1000);           
+          digitalWrite(RELE, HIGH); //Fechar porta
+          liberou = 0;  //Impedir de entrar novamente nesse bloco até limpar o array   
+          Serial.println("Senha correta");       
+          delay(2000); //Esperar 2 segundo para descansar.
+        }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
+          Serial.println("Senha inválida");     
+          liberou = 0;
+        }  
+        Serial.println(serialListener);
+                    
+}else {
+  //Pegar a tecla digitada
   char customKey = customKeypad.getKey(); 
-  //Ignorar a tecla "*" 
+  //Adicionar somente digitos numéricos para o array
   if (customKey && isdigit(customKey)){
+    Serial.println(customKey);
     customKeyArray[contador++] = customKey;
-  }
- 
-  /*
-        Implementar um sistema pro contador resetar. O fato de adicioanr um \0 no final já resolve o problema de memória.
-        "Coloquei o contador para resetar de forma a impedir qcom que o programa pare de funcionar caso ocorra estouro de memória"
-
-  */
-  //Imprimir caso a tecla seja *
-  //Somente enviar caso tenha sido digitado 1 numero
-  if (customKey == '*' && contador > 0){
-
-    //Finalizando a linha para enviar o array
+  }else if (customKey == '*' && contador > 0){ //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
+    //Colocando um terminador de string
     customKeyArray[contador] = '\0';
+    Serial.println("Senha digitada: ");
     Serial.println(customKeyArray);
+    client.write(customKeyArray);
 
+    //Lembrar de esconder a senha mestre @@@@@@@@@@@@
+    if(!client.connected() && strcmp(customKeyArray, "159753") == 0){      
+      Serial.println("Utilizando liberação no modo offline");
+      digitalWrite(RELE, LOW); //Liberar porta
+      delay(1000);           
+      digitalWrite(RELE, HIGH); //Fechar porta
+    }
+  
     //Resetando o array e o contador
     customKeyArray[0] = '\0';
     contador = 0;    
-    liberou = 1; //Pode fazer a leitura do serial Listener    
-  }
+    liberou = 1; //Permite entrar no bloco para receber uma resposta   
+  }    
+}
 
-delay(100);
-  
+//Quando a conexão for perdida
+if (!client.connected()) {
+    //Serial.println("Conexão perdida. Reconectando..."); 
+    conectar();
+  }
+}
+
+void conectar(){
+  client.stop();
+  if(client.connect(server, tcp_port)) {
+    Serial.println("Conectado no ConectarUmaVez");
+  }
 }
