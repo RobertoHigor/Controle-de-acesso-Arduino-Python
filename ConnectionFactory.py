@@ -1,6 +1,7 @@
 #pip install psycopg2
 import psycopg2
 from psycopg2 import Error
+imoprt os
 
 class ConnectionFactory:
     #Metodo estático parar poder usar sem instanciar a classe
@@ -10,7 +11,7 @@ class ConnectionFactory:
             con = psycopg2.connect(
             host="localhost",
             user="postgres",
-            password="26793653",
+            password=os.environ['DB_PASS'],
             database="faeterj"
             )
         #Mensagem de erro

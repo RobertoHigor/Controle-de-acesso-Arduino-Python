@@ -2,12 +2,14 @@
 #include <Ethernet.h>
 
 #define LED 13
-#define RELE 11 //Porta digital 6 PWM
+#define RELE A0 //Porta digital 6 PWM
+#define BUZZER A1
+#define SENHAMESTRE "INSERIR SENHA MASTER AQUI" //Apagar antes do commit
 
 //Definindo as configurações da conexão
 byte mac[] = { 0xBE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-byte ip[] = { 192, 168, 20, 100 };
-byte server[] = { 192, 168, 20, 2 }; // Touchberry Pi Server
+byte ip[] = { 192, 168, 0, 200 };
+byte server[] = { 192, 168, 0, 171 }; // Touchberry Pi Server
 int tcp_port = 65432;
 EthernetClient client;
 
@@ -33,13 +35,14 @@ void setup(){
   Ethernet.begin(mac, ip);
   Serial.begin(9600);  
   pinMode(LED, OUTPUT); 
-  pinMode(RELE, OUTPUT);   
+  pinMode(RELE, OUTPUT); 
+  pinMode(BUZZER, OUTPUT);  
   digitalWrite(RELE, HIGH); //Para começar com a porta fechada
 
   //Um segundo para o shield inicializar
   delay(1000);
   //Diminuindo o timeout do client.connect() para que não bloqueie o Arduino
-  client.setConnectionTimeout(200);
+  client.setConnectionTimeout(100);
   conectar();
   
 }
@@ -63,7 +66,8 @@ if (client.available()){
         if (serialListener == '1'){
           //fazer nada. Testar sem else if caso dê erro.
         }else if (liberou){
-          if (serialListener == 'S'){           
+          if (serialListener == 'S'){ 
+          tone(BUZZER, 400, 500);          
           digitalWrite(RELE, LOW); //Liberar porta
           delay(1000);           
           digitalWrite(RELE, HIGH); //Fechar porta
@@ -82,6 +86,7 @@ if (client.available()){
   if (customKey && isdigit(customKey)){
     //Serial.println(customKey);
     customKeyArray[contador++] = customKey;
+    tone(BUZZER, 400, 100);
   }else if (customKey == '*' && contador > 0){ //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
     //Colocando um terminador de string
     customKeyArray[contador] = '\0';
@@ -90,8 +95,9 @@ if (client.available()){
     client.write(customKeyArray);
 
     //Lembrar de esconder a senha mestre @@@@@@@@@@@@
-    if(!client.connected() && strcmp(customKeyArray, "Inserir Aqui A Senha Offline") == 0){      
+    if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){      
       Serial.println("Utilizando liberação no modo offline");
+      tone(BUZZER, 400, 500);  
       digitalWrite(RELE, LOW); //Liberar porta
       delay(1000);           
       digitalWrite(RELE, HIGH); //Fechar porta
