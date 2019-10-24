@@ -7,9 +7,9 @@ from Usuario import Usuario
     Variáveis
 """
 
-IP = "192.168.20.2" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
+IP = "192.168.0.171" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
 PORTA = 65432 #Portas não registradas > 1023
-TIMEOUT = 120 #Tempo esperando por dados
+TIMEOUT = 1800 #Tempo esperando por dados
 
 """
     Métodos=================================
