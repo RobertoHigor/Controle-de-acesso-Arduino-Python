@@ -9,7 +9,7 @@ from Usuario import Usuario
 
 IP = "192.168.0.171" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
 PORTA = 65432 #Portas não registradas > 1023
-TIMEOUT = 1800 #Tempo esperando por dados
+TIMEOUT = 900 #Tempo esperando por dados
 
 """
     Métodos=================================

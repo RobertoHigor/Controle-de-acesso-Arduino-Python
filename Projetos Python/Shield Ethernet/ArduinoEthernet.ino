@@ -75,7 +75,9 @@ if (client.available()){
           Serial.println("Senha correta");       
           delay(2000); //Esperar 2 segundo para descansar.
         }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
-          Serial.println("Senha inválida");     
+          Serial.println("Senha inválida");
+          for(int i=0;i<4;i++){ //SOM DE ERRO QUANDO A SENHA DIGITADA ESTÁ INCORRETA
+            tone(BUZZER,300,200);     
           liberou = 0;
         }   
         }                   
@@ -97,7 +99,8 @@ if (client.available()){
     //Lembrar de esconder a senha mestre @@@@@@@@@@@@
     if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){      
       Serial.println("Utilizando liberação no modo offline");
-      tone(BUZZER, 400, 500);  
+      for(int i=0;i<4;i++){ //SOM DE QUANDO LIBERA NO MODO OFFLINE
+            tone(BUZZER,300,500); 
       digitalWrite(RELE, LOW); //Liberar porta
       delay(1000);           
       digitalWrite(RELE, HIGH); //Fechar porta
