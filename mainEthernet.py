@@ -1,3 +1,7 @@
+"""
+Programa principal responsável por executar a aplicação desktop Python. Ela serve para autenticar no banco de dados o acesso recebido do Arduino além de gravar o registro do mesmo.
+Autor: Roberto Higor Matos dos Anjos
+"""
 import serial, socket, time
 
 from UsuarioDao import UsuarioDao

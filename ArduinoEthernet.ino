@@ -1,3 +1,9 @@
+/*
+  Programa com o código de comunicação do Arduino com o Python via socket.
+  Responsável por autenticar no banco de dados o acesso do usuário e com isso liberar a porta.
+  Autor: Roberto Higor Matos dos Anjos
+*/
+
 #include <Keypad.h>
 #include <Ethernet.h>
 

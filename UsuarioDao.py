@@ -1,35 +1,11 @@
 from ConnectionFactory import ConnectionFactory
-import psycopg2
+import psycopg2, os
 from psycopg2 import Error
 from Usuario import Usuario
 #exceptions https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql
 
 #Classe responsável pelos querys no banco de dados
 class UsuarioDao:  
-
-    def criarBanco(self):
-        try:
-            con = ConnectionFactory.conectar()
-            cursor = con.cursor()
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS Usuario (
-                nome VARCHAR(50) NOT NULL,
-                usuario VARCHAR(20),
-                senha int(8)
-                PRIMARY KEY(usuario, senha)
-                )""")
-
-            """
-            Importante:
-                Não pode ser permitido repetir a senha, podendo ser ela uma chave primária
-            """
-        except (Exception, psycopg2.Error) as error:
-            print("Falha ao criar o banco: {}".format(error))
-        else:
-            con.commit()
-        finally:
-            con.close()
-            cursor.close()
 
     def inserirUsuario(self, novoUsuario):
         try:
@@ -54,7 +30,7 @@ class UsuarioDao:
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()            
-            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('Laboratorio', '%s')", (usuarioLogin.usuario_id,))
+            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES (%s, %s)", (os.environ['SALA'], usuarioLogin.usuario_id,))
         except (Exception, psycopg2.Error) as error:        
             print("Falha ao inserir o registro: {}".format(error))
         else:

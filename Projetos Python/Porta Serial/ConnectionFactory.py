@@ -1,7 +1,7 @@
 #pip install psycopg2
 import psycopg2
 from psycopg2 import Error
-import os
+imoprt os
 
 class ConnectionFactory:
     #Metodo estático parar poder usar sem instanciar a classe
@@ -16,7 +16,7 @@ class ConnectionFactory:
             )
         #Mensagem de erro
         except (Exception, psycopg2.Error) as error:
-            print('Ocorreu um erro com o banco de dados: {}, valor {!r}'.format(error.args[0], error))
+            print('Exceção número: {}, valor {!r}'.format(error.args[0], error))
             raise
         #Retorna o objeto con caso ocorra tudo bem
         else:
