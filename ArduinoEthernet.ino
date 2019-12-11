@@ -10,7 +10,9 @@
 #define LED 13
 #define RELE A0 //Porta digital 6 PWM
 #define BUZZER A1
-#define SENHAMESTRE "INSERIR SENHA MASTER AQUI" //Apagar antes do commit
+#define SENHAMESTRE "COLOCAR SENHA MESTRE AQUI" //Apagar antes do commit
+#define LEDVERMELHO  A3
+#define LEDVERDE  A2
 
 //Definindo as configurações da conexão
 byte mac[] = { 0xBE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
@@ -45,6 +47,12 @@ void setup(){
   pinMode(BUZZER, OUTPUT);  
   digitalWrite(RELE, HIGH); //Para começar com a porta fechada
 
+  //Leds
+  pinMode(LEDVERMELHO, OUTPUT); //DECLARA O PINO COMO SAÍDA
+  pinMode(LEDVERDE, OUTPUT); //DECLARA O PINO COMO SAÍDA
+  digitalWrite(LEDVERMELHO, HIGH);// LED VERMELHO ACENDE
+  digitalWrite(LEDVERDE, LOW);// LED VERDE APAGA
+
   //Um segundo para o shield inicializar
   delay(1000);
   //Diminuindo o timeout do client.connect() para que não bloqueie o Arduino
@@ -54,18 +62,23 @@ void setup(){
 }
 
 int contador = 0;
+int contadorFalhas = 0;
 char customKeyArray[10] = {};
 char liberou = 0;
 
 void loop(){
 
-//Reiniciar o contador se passar do numero máximo de dígitos.
-if (contador >=7){    
-    contador = 0;
-}
+  //Reiniciar o contador se passar do numero máximo de dígitos.
+  if (contador >=7){    
+      contador = 0;
+  }
+  if (contadorFalhas >= 5){
+      contadorFalhas = 0;
+      delay(300000);
+  }
 
-//Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
-if (client.available()){ 
+  //Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
+  if (client.available()){ 
         Serial.println("Aguardando resposta...");
         char serialListener = client.read(); 
         //Liberar caso receber um sinal 'S'    
@@ -73,62 +86,78 @@ if (client.available()){
           //fazer nada. Testar sem else if caso dê erro.
         }else if (liberou){
           if (serialListener == 'S'){ 
-          tone(BUZZER, 400, 500);          
-          digitalWrite(RELE, LOW); //Liberar porta
-          delay(1000);           
-          digitalWrite(RELE, HIGH); //Fechar porta
-          liberou = 0;  //Impedir de entrar novamente nesse bloco até limpar o array   
-          Serial.println("Senha correta");       
-          delay(2000); //Esperar 2 segundo para descansar.
-        }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
-          Serial.println("Senha inválida");
-          for(int i=0;i<4;i++){ //SOM DE ERRO QUANDO A SENHA DIGITADA ESTÁ INCORRETA
-            tone(BUZZER,300,200);     
-          liberou = 0;
-        }   
-        }                   
-}else {
-  //Pegar a tecla digitada
-  char customKey = customKeypad.getKey(); 
-  //Adicionar somente digitos numéricos para o array
-  if (customKey && isdigit(customKey)){
-    //Serial.println(customKey);
-    customKeyArray[contador++] = customKey;
-    tone(BUZZER, 400, 100);
-  }else if (customKey == '*' && contador > 0){ //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
-    //Colocando um terminador de string
-    customKeyArray[contador] = '\0';
-    Serial.println("Senha digitada: ");
-    Serial.println(customKeyArray);
-    client.write(customKeyArray);
+            digitalWrite(LEDVERDE, HIGH);    
+            digitalWrite(LEDVERMELHO, LOW); 
+            tone(BUZZER, 400, 500);          
+            digitalWrite(RELE, LOW); //Liberar porta
+            delay(1000);  
+            digitalWrite(LEDVERDE, LOW); 
+            digitalWrite(LEDVERMELHO, HIGH);          
+            digitalWrite(RELE, HIGH); //Fechar porta
+            liberou = 0;  //Impedir de entrar novamente nesse bloco até limpar o array   
+            Serial.println("Senha correta");       
+            delay(2000); //Esperar 2 segundo para descansar.
 
-    //Lembrar de esconder a senha mestre @@@@@@@@@@@@
-    if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){      
-      Serial.println("Utilizando liberação no modo offline");
-      for(int i=0;i<4;i++){ //SOM DE QUANDO LIBERA NO MODO OFFLINE
-            tone(BUZZER,300,500); 
-      digitalWrite(RELE, LOW); //Liberar porta
-      delay(1000);           
-      digitalWrite(RELE, HIGH); //Fechar porta
-    }
-  
-    //Resetando o array e o contador
-    customKeyArray[0] = '\0';
-    contador = 0;    
-    liberou = 1; //Permite entrar no bloco para receber uma resposta   
-  }    
-}
+          }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
+            Serial.println("Senha inválida");
+            contadorFalhas++;            
+            for(int i=0;i<4;i++) //SOM DE ERRO QUANDO A SENHA DIGITADA ESTÁ INCORRETA
+              tone(BUZZER,300,200); 
+            for(int i=0;i<4;i++){  // PISCAR LED VERMELHO QUANDO USUÁRIO DIGITAR ERRADO !! 
+              digitalWrite(LEDVERMELHO, LOW);  // POR ALGUM MOTIVO AQUI TEM QUE SER VERDE E NAO VERMELHO, JA ALTERAMOS NO DEFINE E NAO MUDA !             
+              delay(200);
+              digitalWrite(LEDVERMELHO, HIGH); // MAS NA PLACA É O VERMELHO QUE PISCA!!!!
+              delay(200);
+            }    
+            liberou = 0;
+          }   
+        }                   
+  }else {
+    //Pegar a tecla digitada
+    char customKey = customKeypad.getKey(); 
+    //Adicionar somente digitos numéricos para o array
+    if (customKey && isdigit(customKey)){
+      //Serial.println(customKey);
+      customKeyArray[contador++] = customKey;
+      tone(BUZZER, 400, 100);
+    }else if (customKey == '*' && contador > 0){ //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
+      //Colocando um terminador de string
+      customKeyArray[contador] = '\0';
+      Serial.println("Senha digitada: ");
+      Serial.println(customKeyArray);
+      client.write(customKeyArray);
+
+      //Lembrar de esconder a senha mestre @@@@@@@@@@@@
+      if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){      
+        Serial.println("Utilizando liberação no modo offline");
+        digitalWrite(LEDVERDE, HIGH);    
+        digitalWrite(LEDVERMELHO, LOW); 
+        for(int i=0;i<4;i++) //SOM DE QUANDO LIBERA NO MODO OFFLINE
+              tone(BUZZER,300,500); 
+        digitalWrite(RELE, LOW); //Liberar porta
+        delay(1000);   
+        digitalWrite(LEDVERDE, LOW);    
+        digitalWrite(LEDVERMELHO, HIGH);         
+        digitalWrite(RELE, HIGH); //Fechar porta
+      }
+    
+      //Resetando o array e o contador
+      customKeyArray[0] = '\0';
+      contador = 0;    
+      liberou = 1; //Permite entrar no bloco para receber uma resposta   
+    }    
+  }
 
 //Quando a conexão for perdida
-if (!client.connected()) {
-    //Serial.println("Conexão perdida. Reconectando..."); 
-    conectar();
+  if (!client.connected()) {
+      //Serial.println("Conexão perdida. Reconectando..."); 
+      conectar();
   }
 }
 
 void conectar(){
   client.stop();
   if(client.connect(server, tcp_port)) {
-    Serial.println("Conectado no ConectarUmaVez");
+    Serial.println("Conectado");
   }
 }
