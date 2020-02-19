@@ -72,6 +72,7 @@ void setup(){
   
 }
 
+//Variaveis globais de contador
 int contador = 0;
 int contadorFalhas = 0;
 char customKeyArray[10] = {};
@@ -81,28 +82,18 @@ void loop(){
 
   //Reiniciar o contador se passar do numero máximo de dígitos.
   // Nesse caso Identificador da sala (1) + senha (6) + \o terminador (1) = (8 digitos)
-  if (contador >=8){    
-      contador = 0;
-  }
-  if (contadorFalhas >= LIMITE_DE_ERROS){
-      contadorFalhas = 0;
-      delay(300000);
-  }
+  checarContadores(); 
 
   //Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
   if (client.available()){ 
         //Serial.println("Aguardando resposta...");
         char serialListener = client.read(); 
-        //Liberar caso receber um sinal 'S'    
-        if (serialListener == '1'){
-          //fazer nada. Testar sem else if caso dê erro.
-        }
+        
         if (liberou){
           if (serialListener == 'S'){   
             piscarLED(1);              
             liberarPorta();  
-            //Serial.println("Senha correta"); 
-            contadorFalhas = 0;                                   
+            //Serial.println("Senha correta");                                            
           }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
             piscarLED(2); 
             //Serial.println("Senha inválida");
@@ -114,6 +105,7 @@ void loop(){
   }else {
     char customKey = customKeypad.getKey(); //Pegar a tecla digitada
     //Adicionar somente digitos numéricos para o array
+
     if (customKey && isdigit(customKey)){
       //Caso for o primeiro dígito, adicionar o caractere identificador da sala
       if (contador == 0)
@@ -132,14 +124,13 @@ void loop(){
         liberou = 1; //Permite entrar no bloco para receber uma resposta   
       }else if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){ //Caso o Arduino esteja desconectado   
         piscarLED(1); //1 para sucesso
-        liberarPorta(); 
-        contadorFalhas = 0;
+        liberarPorta();         
         for(int i=0;i<4;i++) //SOM DE QUANDO LIBERA NO MODO OFFLINE
               tone(BUZZER,300,500);         
       }    
-      //Resetando o array e o contador
-      customKeyArray[0] = '\0';
-      contador = 0;    
+      limparArray(); 
+    }else if(customkey == '#'){
+      limparArray();
     }    
   }
 
@@ -150,11 +141,15 @@ void loop(){
   }
 }
 
+/**
+* Métodos 
+**/
 void conectar(){
   client.stop();
-  if(client.connect(server, tcp_port)) {
-    //Serial.println("Conectado");
-  }
+  client.connect(server, tcp_port);
+  /*if(client.connect(server, tcp_port)) {
+    Serial.println("Conectado");
+  }*/
 }
 
 //Método para piscar LED no caso de sucesso ou falha
@@ -187,5 +182,22 @@ void liberarPorta(){
   digitalWrite(RELE, LOW); //Liberar porta
   delay(1000);                     
   digitalWrite(RELE, HIGH); //Fechar porta
+  contadorFalhas = 0;
   delay(2000); //Esperar 2 segundo para descansar.
 }  
+
+void limparArray(){
+  //Resetando o array e o contador
+  customKeyArray[0] = '\0';
+  contador = 0;   
+}
+
+void checarContadores(){
+  if (contador >=8){    
+      contador = 0;
+  }
+  if (contadorFalhas >= LIMITE_DE_ERROS){
+      contadorFalhas = 0;
+      delay(300000);
+  }
+}
