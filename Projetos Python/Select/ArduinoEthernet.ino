@@ -7,12 +7,14 @@
 #include <Keypad.h>
 #include <Ethernet.h>
 
+// Variáveis do Arduino
 #define LED 13
 #define RELE A0 //Porta digital 6 PWM
 #define BUZZER A1
 #define SENHAMESTRE "COLOCAR SENHA MESTRE AQUI" //Apagar antes do commit
 #define LEDVERMELHO  A3
 #define LEDVERDE  A2
+#define LIMITE_DE_ERROS 5
 
 /*# Lista de salas #
 # l = Laboratório de robótica
@@ -23,13 +25,13 @@
 #define SALA = 'l'
 
 //Definindo as configurações da conexão
-byte mac[] = { 0xBE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-byte ip[] = { 192, 168, 0, 200 };
-byte server[] = { 192, 168, 0, 171 }; // Touchberry Pi Server
-int tcp_port = 65432;
+byte mac[] = { 0xBE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // MAC único. Gerador: https://ssl.crox.net/arduinomac/
+byte ip[] = { 192, 168, 0, 200 }; // IP do Arduino
+byte server[] = { 192, 168, 18, 33 }; // IP Do servidor. 192.168.18.33 até 192.168.18.63
+int tcp_port = 65432; // Porta do servidor
 EthernetClient client;
 
-//Configuração de teclado
+//Configuração do teclado
 const byte ROWS = 4; 
 const byte COLS = 4; 
 
@@ -43,27 +45,28 @@ char hexaKeys[ROWS][COLS] = {
 //Ordem dos pinos
 byte rowPins[ROWS] = {9, 8, 7, 6}; 
 byte colPins[COLS] = {5, 3, 2, 1};
-
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 void setup(){
   //Inicializando a conexão com o mac e ip definidos.
   Ethernet.begin(mac, ip);
   Serial.begin(9600);  
-  pinMode(LED, OUTPUT); 
+   
+  //Pinos
   pinMode(RELE, OUTPUT); 
   pinMode(BUZZER, OUTPUT);  
   digitalWrite(RELE, HIGH); //Para começar com a porta fechada
-
   //Leds
+  pinMode(LED, OUTPUT);
   pinMode(LEDVERMELHO, OUTPUT); //DECLARA O PINO COMO SAÍDA
   pinMode(LEDVERDE, OUTPUT); //DECLARA O PINO COMO SAÍDA
   digitalWrite(LEDVERMELHO, HIGH);// LED VERMELHO ACENDE
   digitalWrite(LEDVERDE, LOW);// LED VERDE APAGA
 
-  //Um segundo para o shield inicializar
+  //Esperar 1 segundo para inicializar o shield
   delay(1000);
-  //Diminuindo o timeout do client.connect() para que não bloqueie o Arduino
+
+  //Diminuindo o timeout do client.connect() para que não bloqueie o teclado
   client.setConnectionTimeout(100);
   conectar();
   
@@ -81,49 +84,35 @@ void loop(){
   if (contador >=8){    
       contador = 0;
   }
-  if (contadorFalhas >= 5){
+  if (contadorFalhas >= LIMITE_DE_ERROS){
       contadorFalhas = 0;
       delay(300000);
   }
 
   //Quando estiver recebendo dados. Entrar apenas caso esteja enviando uma senha
   if (client.available()){ 
-        Serial.println("Aguardando resposta...");
+        //Serial.println("Aguardando resposta...");
         char serialListener = client.read(); 
         //Liberar caso receber um sinal 'S'    
         if (serialListener == '1'){
           //fazer nada. Testar sem else if caso dê erro.
-        }else if (liberou){
-          if (serialListener == 'S'){ 
-            digitalWrite(LEDVERDE, HIGH);    
-            digitalWrite(LEDVERMELHO, LOW); 
-            tone(BUZZER, 400, 500);          
-            digitalWrite(RELE, LOW); //Liberar porta
-            delay(1000);  
-            digitalWrite(LEDVERDE, LOW); 
-            digitalWrite(LEDVERMELHO, HIGH);          
-            digitalWrite(RELE, HIGH); //Fechar porta
-            liberou = 0;  //Impedir de entrar novamente nesse bloco até limpar o array   
-            Serial.println("Senha correta");       
-            delay(2000); //Esperar 2 segundo para descansar.
-
+        }
+        if (liberou){
+          if (serialListener == 'S'){   
+            piscarLED(1);              
+            liberarPorta();  
+            //Serial.println("Senha correta"); 
+            contadorFalhas = 0;                                   
           }else if (serialListener == 'F'){  //Exibir falha caso receber um sinal 'F'
-            Serial.println("Senha inválida");
-            contadorFalhas++;            
-            for(int i=0;i<4;i++) //SOM DE ERRO QUANDO A SENHA DIGITADA ESTÁ INCORRETA
-              tone(BUZZER,300,200); 
-            for(int i=0;i<4;i++){  // PISCAR LED VERMELHO QUANDO USUÁRIO DIGITAR ERRADO !! 
-              digitalWrite(LEDVERMELHO, LOW);  // POR ALGUM MOTIVO AQUI TEM QUE SER VERDE E NAO VERMELHO, JA ALTERAMOS NO DEFINE E NAO MUDA !             
-              delay(200);
-              digitalWrite(LEDVERMELHO, HIGH); // MAS NA PLACA É O VERMELHO QUE PISCA!!!!
-              delay(200);
-            }    
-            liberou = 0;
-          }   
-        }                   
+            piscarLED(2); 
+            //Serial.println("Senha inválida");
+            contadorFalhas++;                                
+          }  
+          liberou = 0;  //Impedir a entrada até limpar o Array 
+        } 
+  //Laço que o programa entra normalmente                  
   }else {
-    //Pegar a tecla digitada
-    char customKey = customKeypad.getKey(); 
+    char customKey = customKeypad.getKey(); //Pegar a tecla digitada
     //Adicionar somente digitos numéricos para o array
     if (customKey && isdigit(customKey)){
       //Caso for o primeiro dígito, adicionar o caractere identificador da sala
@@ -131,31 +120,26 @@ void loop(){
         customKeyArray[contador++] = SALA;
       customKeyArray[contador++] = customKey;
       tone(BUZZER, 400, 100);
-    }else if (customKey == '*' && contador > 0){ //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
-      //Colocando um terminador de string
-      customKeyArray[contador] = '\0';
-      Serial.println("Senha digitada: ");
-      Serial.println(customKeyArray);
-      client.write(customKeyArray);
 
-      //Lembrar de esconder a senha mestre @@@@@@@@@@@@
-      if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){      
-        Serial.println("Utilizando liberação no modo offline");
-        digitalWrite(LEDVERDE, HIGH);    
-        digitalWrite(LEDVERMELHO, LOW); 
+      //Somente enviar caso tenha sido digitado 1 numero e apertado o * para finalizar
+    }else if (customKey == '*' && contador > 0){ 
+      customKeyArray[contador] = '\0'; //Terminador de String
+
+      if (client.connected()){
+        //Serial.println("Senha digitada: ");
+        //Serial.println(customKeyArray);
+        client.write(customKeyArray);
+        liberou = 1; //Permite entrar no bloco para receber uma resposta   
+      }else if(!client.connected() && strcmp(customKeyArray, SENHAMESTRE) == 0){ //Caso o Arduino esteja desconectado   
+        piscarLED(1); //1 para sucesso
+        liberarPorta(); 
+        contadorFalhas = 0;
         for(int i=0;i<4;i++) //SOM DE QUANDO LIBERA NO MODO OFFLINE
-              tone(BUZZER,300,500); 
-        digitalWrite(RELE, LOW); //Liberar porta
-        delay(1000);   
-        digitalWrite(LEDVERDE, LOW);    
-        digitalWrite(LEDVERMELHO, HIGH);         
-        digitalWrite(RELE, HIGH); //Fechar porta
-      }
-    
+              tone(BUZZER,300,500);         
+      }    
       //Resetando o array e o contador
       customKeyArray[0] = '\0';
       contador = 0;    
-      liberou = 1; //Permite entrar no bloco para receber uma resposta   
     }    
   }
 
@@ -169,6 +153,39 @@ void loop(){
 void conectar(){
   client.stop();
   if(client.connect(server, tcp_port)) {
-    Serial.println("Conectado");
+    //Serial.println("Conectado");
   }
 }
+
+//Método para piscar LED no caso de sucesso ou falha
+void piscarLED(char estado){
+  switch(estado){
+    //Sucesso
+    case 1:
+      digitalWrite(LEDVERDE, HIGH);    
+      digitalWrite(LEDVERMELHO, LOW); 
+      tone(BUZZER, 400, 500); 
+      digitalWrite(LEDVERDE, LOW); 
+      digitalWrite(LEDVERMELHO, HIGH);
+      break;
+    //Falha
+    case 2:      
+      for(int i=0;i<4;i++) //Som de senha inválida
+        tone(BUZZER,300,200); /
+      
+      for(int i=0;i<4;i++){  // Piscar LED Vermelho
+        digitalWrite(LEDVERMELHO, LOW);  // POR ALGUM MOTIVO AQUI TEM QUE SER VERDE E NAO VERMELHO, JA ALTERAMOS NO DEFINE E NAO MUDA !             
+        delay(200);
+        digitalWrite(LEDVERMELHO, HIGH); // MAS NA PLACA É O VERMELHO QUE PISCA!!!!
+        delay(200);
+      }  
+      break;
+  }   
+}
+
+void liberarPorta(){
+  digitalWrite(RELE, LOW); //Liberar porta
+  delay(1000);                     
+  digitalWrite(RELE, HIGH); //Fechar porta
+  delay(2000); //Esperar 2 segundo para descansar.
+}  
