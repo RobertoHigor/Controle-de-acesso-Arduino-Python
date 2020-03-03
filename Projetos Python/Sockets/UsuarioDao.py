@@ -1,5 +1,5 @@
 from ConnectionFactory import ConnectionFactory
-import psycopg2
+import psycopg2, os
 from psycopg2 import Error
 from Usuario import Usuario
 #exceptions https://codereview.stackexchange.com/questions/187951/crud-operations-for-a-contact-list-using-pymysql
@@ -26,30 +26,11 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
-    def inserirLog(self, usuarioLogin, sala):
-        # Lista de salas
-        # l = Laboratório de robótica
-        # d = Sala da diretora
-        # m = Manuntenção
-        # As salas com números serão as salas numeradas		
-        if sala == "l":
-            sala = "Laboratório"
-        elif sala == "d":
-            sala = "Direção"
-        elif sala == "m":
-            sala = "Manuntenção"
-        elif sala == "1":
-            sala = "Sala 1"
-        elif sala == "2":
-            sala = "Sala 2"
-		elif sala == "3":
-			sala = "Sala 3
-		
-
+    def inserirLog(self, usuarioLogin):
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()            
-            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES (%s, %s)", (sala, usuarioLogin.usuario_id,))
+            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES (%s, %s)", (os.environ['SALA'], usuarioLogin.usuario_id,))
         except (Exception, psycopg2.Error) as error:        
             print("Falha ao inserir o registro: {}".format(error))
         else:

@@ -32,14 +32,15 @@ Para se instalar as bibliotecas que foram utilizadas, basta executar o seguinte 
 
 # Instruções para execução
 É necessário entrar no ambiente virtual. Após isso, é preciso alterar a porta no qual o Arduino está conectado na variável arduino no arquivo main.py. Por padrão está a porta COM4.
-Com o banco de dados sendo executado junto do arduino, basta executar o código através do comando `python main.py` que ele já vai estar funcionando em loop esperando uma mensagem do Arduino.
+Com o banco de dados sendo executado junto do arduino, basta executar o código através do comando `python mainPython.py` que ele já vai estar funcionando em loop esperando uma mensagem do Arduino.
 
-obs: Alterar a coluna data_acesso para o valor default now()
+No caso no Linux, o programa pode ser executado via SSH através do comando `nohup` que serve para manter em execução mesmo que a sessão acabe. O argumento `&` faz com que o processo rode em segundo plano, devolvendo o ID do processo que deve ser anotado caso queira parar o programa.
+O comando final fica assim: `nohup python mainPython.py`
 
 ## Arduino
-O programa irá esperar o input no teclado numérico até que o usuário aperte a tecla "*". Após recebido, ele envia para o python através da porta serial.
+O programa Arduino espera até que o usuario digite 6 números para tentar liberar a porta. A tecla "#" serve para limpar os dados digitados, caso o usuário cometa algum erro. Após isso, os dados são enviados via socket para a aplicação Python.
 
-É necessário a instalação da [Arduino IDE](https://www.arduino.cc/en/Main/Software) que já inclui os drivers necessários para o Arduino. Em seguida é preciso que seja criado um projeto na IDE para que seja possível o envio do código para a placa Arduino.
+É necessário a instalação da [Arduino IDE](https://www.arduino.cc/en/Main/Software) para enviar o código para o Arduino, já incluindo os drivers necessários para o Arduino. Em seguida, é preciso que seja criado um projeto na IDE e então, verificar se a biblioteca Ethernet está importada para que seja possível o envio do código para a placa Arduino.
 
 # Pré-requisitos Arduino
 Keypad.h
