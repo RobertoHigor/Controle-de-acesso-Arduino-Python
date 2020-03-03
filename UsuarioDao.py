@@ -37,13 +37,20 @@ class UsuarioDao:
         elif sala == "d":
             sala = "Direção"
         elif sala == "m":
-            sala = "Manuntenção"
+            sala = "Manutenção"
         elif sala == "1":
             sala = "Sala 1"
         elif sala == "2":
             sala = "Sala 2"
 		elif sala == "3":
 			sala = "Sala 3
+        elif sala == "4":
+            sala = "Sala 4"
+        elif sala == "5":
+            sala = "Sala 5"
+        elif sala = "6"
+            sala = "Sala 6"
+
 		
 
         try:
