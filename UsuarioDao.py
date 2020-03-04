@@ -10,12 +10,10 @@ class UsuarioDao:
     def inserirUsuario(self, novoUsuario):
         try:
             con = ConnectionFactory.conectar()
-            cursor = con.cursor()
-            
-            #cursor.execute("INSERT INTO livro VALUES (%s, %s, %s, %s) ", (novoUsuario.isbn, novoUsuario.titulo, novoUsuario.autor, novoUsuario.preco))   
+            cursor = con.cursor()                    
             cursor.execute("INSERT INTO Usuario VALUES (%s, %s, %s)", (novoUsuario.nome, novoUsuario.usuario, novoUsuario.senha))                  
-        #bloco de exceção
         
+        #bloco de exceção        
         except (Exception, psycopg2.Error) as error:
             print("Falha ao inserir: {}".format(error))
         #bloco que será executado caso tudo ocorra bem
@@ -39,19 +37,15 @@ class UsuarioDao:
         elif sala == "m":
             sala = "Manutenção"
         elif sala == "1":
-            sala = "Sala 1"
+            sala = "1º Período"
         elif sala == "2":
-            sala = "Sala 2"
-		elif sala == "3":
-			sala = "Sala 3
+            sala = "2º Período"
+        elif sala == "3":
+            sala = "3º Período"
         elif sala == "4":
-            sala = "Sala 4"
+            sala = "4º Período"
         elif sala == "5":
-            sala = "Sala 5"
-        elif sala = "6"
-            sala = "Sala 6"
-
-		
+            sala = "5º Período"
 
         try:
             con = ConnectionFactory.conectar()
@@ -81,7 +75,12 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
-    def logarUsuario(self, senha):
+    def logarUsuario(self, senha, sala):
+        if sala == "d":
+            sala = 2
+        if sala == "1":
+            sala = 1
+            
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()          
@@ -97,12 +96,22 @@ class UsuarioDao:
                                     AS a
                                 )AS a 
                             ON b.id=a.usuario_id_id
-                            WHERE a."senhaPorta" = '%s'""", (senha,))           
+                            WHERE a."senhaPorta" = '{0}'""".format(senha)) 
+
+            usuarioExistente = cursor.fetchone()
+
+            cursor.execute("""SELECT user_id, group_id 
+                            FROM auth_user_groups
+                            WHERE user_id = '{0}' AND group_id = '{1}' """.format(usuarioExistente[0], sala))
+
+            usuarioComPermissao = cursor.fetchone()
+                
             
         except (Exception, psycopg2.Error) as error:
-            print("Falha ao obter o registro: {}".format(error))
+            print("Falha ao obter o registro: {0}".format(error))
         else:
-            return cursor.fetchone()                                 
+            if (usuarioComPermissao):
+                return usuarioExistente;                                
         finally:
             con.close()
             cursor.close()

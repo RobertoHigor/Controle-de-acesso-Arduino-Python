@@ -8,9 +8,9 @@ class ConnectionFactory:
     @staticmethod
     def conectar():
         try:
-            con = psycopg2.connect(
-            host="localhost",
-            user="postgres",
+            con = psycopg2.connect(            
+            host="192.168.4.23",
+            user="sirlab",
             password=os.environ['DB_PASS'],
             database="faeterj"
             )

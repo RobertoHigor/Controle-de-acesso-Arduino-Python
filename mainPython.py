@@ -11,7 +11,7 @@ from Usuario import Usuario
     Variáveis
 """
 
-IP = "192.168.20.2" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
+IP = "192.168.4.23" #Ip do servidor. "" significa todos os ips do computador (local e de rede)
 PORTA = 65432 #Portas não registradas > 1023
 TIMEOUT = 900 #Tempo esperando por dados
 
@@ -46,20 +46,17 @@ def logar(s, senha, sala):
     Main ====================================
 """
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# Serve para criar um socket non-blocking, não bloqueando o sistema e permitindo mais de um cliente.
+#Serve para criar um socket non-blocking, não bloqueando o sistema e permitindo mais de um cliente.
 server.setblocking(0)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #Permitir reutilizar um socket aberto
 server.bind(('localhost', PORTA))  
 print("Bind no IP: {} e PORTA: {}".format(IP, PORTA))
 print("Servidor ouvindo...") 
 
-# Numero de conexões aceitas
-server.listen(5)
-# São os sockets onde será lido os dados
-inputs = [server]
-# São os sockets em será escrito
-outputs = []
-# Dicionario de mensagens
-message_queues = {}
+server.listen(20) #Numero de conexões aceitas
+inputs = [server] #São os sockets onde será lido os dados
+outputs = []#São os sockets em será escrito
+message_queues = {}# Dicionario de mensagens
 
 while(1):  
         # Bloco para tratar erro nos digitos recebidos ao invés de parar o programa
@@ -85,7 +82,7 @@ while(1):
                 else:
                     try:
                         # @@@@@@@@ Testar se precisa do send b'1' para checar conexão
-                        data = s.recv(15).decode("UTF-8") #decode serve para transformar em caracteres e o :-2 significa ir até -2 para cortar \n
+                        data = s.recv(7).decode("UTF-8") #decode serve para transformar em caracteres e o :-2 significa ir até -2 para cortar \n
                         senha = int(data[1:])
                         sala = data[:1]               
                         if data:
@@ -124,6 +121,9 @@ while(1):
                         if s in outputs:
                             outputs.remove(s)
                         s.close()
+                    except ValueError as err:
+                        senha = 0
+                        print("Ocorreu um erro com digitos recebidos: '", err) 
                     except Exception as err:
                         senha = 0
                         print("Ocorreu um erro com digitos recebidos: '", err)  
