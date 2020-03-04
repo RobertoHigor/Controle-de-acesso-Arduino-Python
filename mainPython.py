@@ -28,7 +28,7 @@ def inserirRegistro(result, sala):
 #Método para chegar se achou um registro com a senha digitada
 def logar(s, senha, sala):
     usr = UsuarioDao()
-    result = usr.logarUsuario(senha)
+    result = usr.logarUsuario(senha, sala)
     try:        
         if result is not None:        
             message_queues[s].put('S'.encode())
