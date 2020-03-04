@@ -6,14 +6,19 @@ from Usuario import Usuario
 
 #Classe responsável pelos querys no banco de dados
 class UsuarioDao:  
-    # Lista de salas
-    # l = Laboratório de robótica
-    # d = Sala da diretora
-    # m = Manuntenção
-    # As salas com números serão as salas numeradas	
-    salasDicionario = {'l':['Laboratório', 3], 'd':['Direção', 2], 'm':'Manutenção', 1:'1 Periodo', 2:'2 Periodo', 3:'3 Periodo', 4:'4 Periodo', 5:'5 Periodo'}
+    # Lista de salas.
+    #Cada caractere único é associado a uma sala, contendo seu nome e ID do grupo no banco de dados    
+    salasDicionario = {'d':['Direção', 2],     
+     'l':['Laboratório', 3],
+     'm':['Manutenção', 4],
+      1:['1 Periodo', 5],
+      2:['2 Periodo', 6],
+      3:['3 Periodo', 7],
+      4:['4 Periodo', 8],
+      5:['5 Periodo', 9]}
 
-    def inserirLog(self, usuario, sala):
+    #Inseri o registro do acesso feito com sucesso
+    def inserirRegistroDeAcesso(self, usuario, sala):
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()       
@@ -26,22 +31,7 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
-    def selecionarUsuario(self, usuarioConsulta):
-        try:
-            con = ConnectionFactory.conectar()
-            cursor = con.cursor()          
-            #A variavel (senha,) precisa SEMPRE terminar em vírgula          
-            cursor.execute("SELECT * FROM AUTH_USER WHERE senha = '{0}'".format(usuarioConsulta.senha))            
-            
-        except (Exception, psycopg2.Error) as error:
-            print("Falha ao obter o registro: {}".format(error))
-        else:
-            #return cursor.fetchall()
-            return cursor.fetchone()
-        finally:
-            con.close()
-            cursor.close()
-
+    #Checa se o usuário possui permissão na sala que deseja acessar
     def checarPermissaoUsuario(self, usuario_id, sala):      
         try:
             con = ConnectionFactory.conectar()
@@ -50,7 +40,6 @@ class UsuarioDao:
             cursor.execute("""SELECT user_id, group_id 
                             FROM auth_user_groups
                             WHERE user_id = '{0}' AND group_id = '{1}' """.format(usuario_id, self.salasDicionario[sala][1]))
-
             usuarioComPermissao = cursor.fetchone()                
             
         except (Exception, psycopg2.Error) as error:
@@ -62,13 +51,12 @@ class UsuarioDao:
             con.close()
             cursor.close()
 
-    def logarUsuario(self, senha, sala):
+    #Checa se o usuário existe no banco de dados
+    def usuarioExiste(self, senha, sala):
         try:
             con = ConnectionFactory.conectar()
-            cursor = con.cursor()          
-            #A variavel (senha,) precisa SEMPRE terminar em vírgula          
-            #cursor.execute("SELECT * FROM AUTH_USER WHERE senha = '%s'", (senha,))   
-            #Inner join criado para o postgres devido a sua limitação.
+            cursor = con.cursor()           
+            #Inner join criado para o postgres devido a sua limitação de query.
             cursor.execute("""SELECT b.* 
                             FROM AUTH_USER AS b 
                             INNER JOIN 
@@ -87,7 +75,7 @@ class UsuarioDao:
             print("Falha ao obter o registro em logarUsuario(): {0}".format(error))
         else:
             if (usuarioTemPermissao):     
-                self.inserirLog(usuario, sala)
+                self.inserirRegistroDeAcesso(usuario, sala)
                 return True 
             else: return False                           
         finally:

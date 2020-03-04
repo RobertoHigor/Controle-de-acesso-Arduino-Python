@@ -19,17 +19,17 @@ TIMEOUT = 900 #Tempo esperando por dados
     Métodos=================================
 """
 #Checar se o usuário existe e possui permissão da sala atual. A variável S é o pacote no Select
-def logar(s, senha, sala):
+def checarSenhaPorta(s, senha, sala):
     usr = UsuarioDao()
     try:        
-        if (usr.logarUsuario(senha, sala)):        
+        if (usr.usuarioExiste(senha, sala)):        
             message_queues[s].put('S'.encode())
             print("Sucesso na sala {}".format(sala))              
         else:            
             message_queues[s].put('F'.encode())
             print("Falha na sala {}".format(sala))
     except Exception as err:
-        print("Ocorreu um erro no envio da mensagem", err)          
+        print("Ocorreu um erro no envio da mensagem no método checarSenhaPorta()", err)          
 
 """
     Main ====================================
@@ -78,11 +78,11 @@ while(1):
                             print("Recebido {} de {}".format(data, s.getpeername()))          
                             # Autenticar a snah recebida
                             try:
-                                logar(s, senha, sala)    
+                                checarSenhaPorta(s, senha, sala)    
                             except OSError as err:
                                 print("Ocorreu um erro com o Socket", err)                        
                             except Exception as err:
-                                print("Ocorreu um erro ao tentar logar: '", err )
+                                print("Ocorreu um erro ao tentar checarSenhaPorta: '", err )
                         # Adicionar em outputs para ser escrito posteriormente (writable)      
                             if s not in outputs:
                                     outputs.append(s)                        

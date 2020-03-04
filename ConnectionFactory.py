@@ -9,10 +9,10 @@ class ConnectionFactory:
     def conectar():
         try:
             con = psycopg2.connect(            
-            host="192.168.20.239",
+            host="192.168.4.23",
             user="sirlab",
             password=os.environ['DB_PASS'],
-            database="sirlab"
+            database="faeterj"
             )
         #Mensagem de erro
         except (Exception, psycopg2.Error) as error:
