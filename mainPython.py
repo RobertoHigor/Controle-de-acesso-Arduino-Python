@@ -18,24 +18,13 @@ TIMEOUT = 900 #Tempo esperando por dados
 """
     Métodos=================================
 """
-
-#Inserir na tabela LOG quando a porta foi aberta
-def inserirRegistro(result, sala):  
-    usr = UsuarioDao()
-    usuarioRetorno = Usuario(result[0], result[1], result[4], result[5], result[6], result[7])   
-    usr.inserirLog(usuarioRetorno, sala)
-
-#Método para chegar se achou um registro com a senha digitada
+#Checar se o usuário existe e possui permissão da sala atual. A variável S é o pacote no Select
 def logar(s, senha, sala):
     usr = UsuarioDao()
-    result = usr.logarUsuario(senha, sala)
     try:        
-        if result is not None:        
+        if (usr.logarUsuario(senha, sala)):        
             message_queues[s].put('S'.encode())
-            print("Sucesso na sala {}".format(sala))    
-            #Inserir no registro o usuário que possui a senha digitada    
-            inserirRegistro(result, sala)            
-        
+            print("Sucesso na sala {}".format(sala))              
         else:            
             message_queues[s].put('F'.encode())
             print("Falha na sala {}".format(sala))

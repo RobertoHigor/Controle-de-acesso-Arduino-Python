@@ -12,28 +12,12 @@ class UsuarioDao:
     # m = Manuntenção
     # As salas com números serão as salas numeradas	
     salasDicionario = {'l':['Laboratório', 3], 'd':['Direção', 2], 'm':'Manutenção', 1:'1 Periodo', 2:'2 Periodo', 3:'3 Periodo', 4:'4 Periodo', 5:'5 Periodo'}
-    def inserirUsuario(self, novoUsuario):
-        try:
-            con = ConnectionFactory.conectar()
-            cursor = con.cursor()                    
-            cursor.execute("INSERT INTO Usuario VALUES (%s, %s, %s)", (novoUsuario.nome, novoUsuario.usuario, novoUsuario.senha))                  
-        
-        #bloco de exceção        
-        except (Exception, psycopg2.Error) as error:
-            print("Falha ao inserir: {}".format(error))
-        #bloco que será executado caso tudo ocorra bem
-        else:
-            con.commit()
-        #bloco que sempre será executado para fechar a conexão
-        finally:
-            con.close()
-            cursor.close()
 
-    def inserirLog(self, usuarioLogin, sala):
+    def inserirLog(self, usuario, sala):
         try:
             con = ConnectionFactory.conectar()
             cursor = con.cursor()       
-            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('{0}', '{1}')".format(self.salasDicionario[sala][0], usuarioLogin.usuario_id))
+            cursor.execute("INSERT INTO monitoramento_registro (sala_acesso, usuario_id) VALUES ('{0}', '{1}')".format(self.salasDicionario[sala][0], usuario[0]))
         except (Exception, psycopg2.Error) as error:        
             print("Falha ao inserir o registro: {}".format(error))
         else:
@@ -102,8 +86,10 @@ class UsuarioDao:
         except (Exception, psycopg2.Error) as error:
             print("Falha ao obter o registro em logarUsuario(): {0}".format(error))
         else:
-            if (usuarioTemPermissao): return usuario   
-            else: return None                           
+            if (usuarioTemPermissao):     
+                self.inserirLog(usuario, sala)
+                return True 
+            else: return False                           
         finally:
             con.close()
             cursor.close()
