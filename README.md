@@ -2,6 +2,8 @@
 
 Programa desenvolvido em python que se comunica com um servidor arduino. O arduino envia uma senha para o programa poder validar se existe um usuário com essa senha. Caso exista, ele envia um sinal para que o arduino libere a porta e registra esse acesso na tabela de registros.
 
+Para mais detalhes, segue o [texto do TCC](./TCC_Roberto_Faeterj.pdf) 
+
 ### Instalação
 
 ## Aplicação Python
